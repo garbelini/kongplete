@@ -13,7 +13,7 @@ import (
 // InstallCompletions is a kong command for installing or uninstalling shell completions
 type InstallCompletions struct {
 	Uninstall bool
-	Shell     string `enum:"bash,zsh,fish" help:"The target shell: ${enum}"`
+	Shell     string `enum:"bash,zsh,fish" help:"The target shell: ${enum}" required:""`
 }
 
 // BeforeApply installs completion into the users shell.
