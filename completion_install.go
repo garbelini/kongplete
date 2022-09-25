@@ -8,17 +8,17 @@ import (
 
 	"github.com/alecthomas/kong"
 	"github.com/pkg/errors"
-	"github.com/riywo/loginshell"
 )
 
 // InstallCompletions is a kong command for installing or uninstalling shell completions
 type InstallCompletions struct {
 	Uninstall bool
+	Shell     string `enum:"bash,zsh,fish" help:"The target shell: ${enum}"`
 }
 
 // BeforeApply installs completion into the users shell.
 func (c *InstallCompletions) BeforeApply(ctx *kong.Context) error {
-	err := installCompletionFromContext(ctx)
+	err := c.installCompletionFromContext(ctx)
 	if err != nil {
 		return err
 	}
@@ -42,11 +42,8 @@ complete -f -c ${cmd} -a "(__complete_${cmd})"
 }
 
 // installCompletionFromContext writes shell completion for the given command.
-func installCompletionFromContext(ctx *kong.Context) error {
-	shell, err := loginshell.Shell()
-	if err != nil {
-		return errors.Wrapf(err, "couldn't determine user's shell")
-	}
+func (c *InstallCompletions) installCompletionFromContext(ctx *kong.Context) error {
+	shell := c.Shell
 	bin, err := os.Executable()
 	if err != nil {
 		return errors.Wrapf(err, "couldn't find absolute path to ourselves")
